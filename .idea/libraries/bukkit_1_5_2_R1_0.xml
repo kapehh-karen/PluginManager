@@ -2,6 +2,7 @@
   <library name="bukkit-1.5.2-R1.0">
     <CLASSES>
       <root url="jar://D:/YandexDisk/Programming/MyJava/Bukkit Libs/1.5.2/bukkit-1.5.2-R1.0.jar!/" />
+      <root url="jar://D:/YandexDisk/Programming/MyJava/Bukkit Libs/Vault.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
