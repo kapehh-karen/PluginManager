@@ -36,7 +36,7 @@ public class PluginConfig {
         return this;
     }
 
-    public void RaiseEvent(EventType eventPluginConfig) throws InvocationTargetException, IllegalAccessException {
+    public PluginConfig RaiseEvent(EventType eventPluginConfig) throws InvocationTargetException, IllegalAccessException {
         for (Object c : listOfClass) {
             Method[] methods = c.getClass().getMethods();
             for(Method method : methods){
@@ -47,20 +47,22 @@ public class PluginConfig {
                 }
             }
         }
+        return this;
     }
 
     public FileConfiguration getConfig() {
         return cfg;
     }
 
-    public void setup() {
+    public PluginConfig setup() {
         plugin.saveDefaultConfig();
         cfg = plugin.getConfig();
         cfg.options().copyDefaults(true);
         plugin.saveConfig();
+        return this;
     }
 
-    public void loadData() {
+    public PluginConfig loadData() {
         plugin.reloadConfig();
         cfg = plugin.getConfig();
         try {
@@ -68,15 +70,17 @@ public class PluginConfig {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return this;
     }
 
-    public void saveData() {
+    public PluginConfig saveData() {
         try {
             RaiseEvent(EventType.SAVE);
         } catch (Exception e) {
             e.printStackTrace();
         }
         plugin.saveConfig();
+        return this;
     }
 
 
