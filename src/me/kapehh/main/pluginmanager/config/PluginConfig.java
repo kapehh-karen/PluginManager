@@ -13,6 +13,10 @@ import java.util.List;
  */
 public class PluginConfig {
 
+    // TODO: Сделать в виде плагина для Bukkit'а
+    // TODO: В версии для плагина Bukkit, сделать проверку на Vault
+    // TODO: Добавить PluginChecker, для проверки плагинов
+
     // Системные переменные TODO: может быть надо убрать в другой класс
     public static final String fileSep = System.getProperty("file.separator");
     public static final String lineSep = System.getProperty("line.separator");
@@ -37,6 +41,7 @@ public class PluginConfig {
     }
 
     public PluginConfig RaiseEvent(EventType eventPluginConfig) throws InvocationTargetException, IllegalAccessException {
+        // TODO: Сделать добавление методов в addEventClasses, а потом вызывать их, так будет вроде быстрее
         for (Object c : listOfClass) {
             Method[] methods = c.getClass().getMethods();
             for(Method method : methods){
