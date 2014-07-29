@@ -69,7 +69,7 @@ public class PluginConfig {
         for (Object c : mapSelect.keySet()) {
             List<Method> methods = mapSelect.get(c);
             for(Method method : methods){
-                method.invoke(c);
+                method.invoke(c); // TODO: В метод передавать конфиг
             }
         }
         return this;
