@@ -1,8 +1,11 @@
 package me.kapehh.main.pluginmanager;
 
 import me.kapehh.main.pluginmanager.logger.PluginLogger;
+import me.kapehh.main.pluginmanager.parsers.PluginParserItem;
 import me.kapehh.main.pluginmanager.parsers.PluginParserLocation;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -10,7 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class PluginManager extends JavaPlugin {
     /*public static void main(String[] args) {
-        Location location = PluginParserLocation.parseLocation("world");
-        System.out.println(location);
+        ItemStack item = PluginParserItem.parseItem("WOOL:3");
+        System.out.println(PluginParserItem.toString(item));
     }*/
 }

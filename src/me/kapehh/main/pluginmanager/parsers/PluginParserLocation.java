@@ -20,7 +20,7 @@ public class PluginParserLocation {
             World world = Bukkit.getWorld(p[0]);
             if (p.length < 4) {
                 return world.getSpawnLocation();
-            } else if (p.length >= 4) {
+            } else {
                 x = Double.valueOf(p[1]);
                 y = Double.valueOf(p[2]);
                 z = Double.valueOf(p[3]);
