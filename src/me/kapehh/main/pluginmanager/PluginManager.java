@@ -1,6 +1,8 @@
 package me.kapehh.main.pluginmanager;
 
 import me.kapehh.main.pluginmanager.logger.PluginLogger;
+import me.kapehh.main.pluginmanager.parsers.PluginParserLocation;
+import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -8,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class PluginManager extends JavaPlugin {
     /*public static void main(String[] args) {
-        PluginLogger logger = new PluginLogger(new PluginManager(), "test");
+        Location location = PluginParserLocation.parseLocation("world");
+        System.out.println(location);
     }*/
 }
