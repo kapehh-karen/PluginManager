@@ -15,3 +15,11 @@ if (getServer().getPluginManager().getPlugin("PluginManager") == null) {
     return;
 }
 </pre>
+
+<b>До кучи в .gitignore</b>
+<pre>
+# IDEA Files
+.idea/workspace.xml
+.idea/libraries
+out/
+</pre>
