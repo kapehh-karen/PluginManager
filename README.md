@@ -23,3 +23,34 @@ if (getServer().getPluginManager().getPlugin("PluginManager") == null) {
 .idea/libraries
 out/
 </pre>
+
+Использование
+=============
+
+<b>Загрузка из конфига</b>
+<pre>
+// Инициализация
+PluginConfig pluginConfig = new PluginConfig(this);
+pluginConfig.addEventClasses(new MainConfig(this, pluginConfig));
+pluginConfig.setup();
+pluginConfig.loadData();
+
+// В слушателе
+@EventPluginConfig(EventType.LOAD)
+public void onLoad() {
+    // TODO
+}
+</pre>
+
+<b>Логирование</b>
+<pre>
+// Инициализация
+PluginLogger pluginLogger = new PluginLogger(this, "dupers");
+pluginLogger.setup();
+pluginLogger.getLog().info("* * * STARTED * * *");
+
+// Выключение
+if (pluginLogger != null) {
+    pluginLogger.shutDown();
+}
+</pre>
