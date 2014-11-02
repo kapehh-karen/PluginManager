@@ -29,7 +29,7 @@ out/
 
 <b>Загрузка из конфига</b>
 <pre>
-// Инициализация
+// Enable
 PluginConfig pluginConfig = new PluginConfig(this);
 pluginConfig.addEventClasses(new MainConfig(this, pluginConfig));
 pluginConfig.setup();
@@ -40,17 +40,41 @@ pluginConfig.loadData();
 public void onLoad() {
     // TODO
 }
+
+// Disable
+if (pluginConfig != null) {
+    pluginConfig.saveData();
+}
 </pre>
 
 <b>Логирование</b>
 <pre>
-// Инициализация
+// Enable
 PluginLogger pluginLogger = new PluginLogger(this, "dupers");
 pluginLogger.setup();
 pluginLogger.getLog().info("* * * STARTED * * *");
 
-// Выключение
+// Disable
 if (pluginLogger != null) {
     pluginLogger.shutDown();
+}
+</pre>
+
+<b>Чекер</b>
+<pre>
+PluginChecker pluginChecker = new PluginChecker(this);
+if (!pluginChecker.check("WorldEdit")) {
+    return;
+}
+</pre>
+
+<b>Валюта</b>
+<pre>
+Economy economy = PluginVault.setupEconomy();
+Permission permission = PluginVault.setupPermissions();
+if (economy == null) {
+    getLogger().info("Economy plugin not found!!!");
+    getServer().getPluginManager().disablePlugin(this);
+    return;
 }
 </pre>
