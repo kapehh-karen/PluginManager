@@ -13,6 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class PluginManager extends JavaPlugin {
     // TODO: Смотреть тудушки
+    // TODO: в parsers вставить механизм JavaScript для вычисления значений
 
     /*public static void main(String[] args) {
         ItemStack item = PluginParserItem.parseItem("WOOL:3");

@@ -109,7 +109,7 @@ public class PluginConfig {
     }
 
 
-    // Сделать конструктор типа PluginConfig(String configName) для кода ниже
+    // TODO: Сделать конструктор типа PluginConfig(String configName) для кода ниже
 
     /*private static LinkedHashMap<String, YamlConfiguration> lstCfg = new LinkedHashMap<String, YamlConfiguration>();
 
