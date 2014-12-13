@@ -37,8 +37,7 @@ public class PluginConfig {
             methodArrayListSave = new ArrayList<Method>();
             Method[] methods = c.getClass().getMethods();
             for(Method method : methods){
-                if(method.isAnnotationPresent(EventPluginConfig.class)
-                        && method.getParameterTypes().length == 0) {
+                if(method.isAnnotationPresent(EventPluginConfig.class)) {
                     if (method.getAnnotation(EventPluginConfig.class).value().equals(EventType.LOAD)) {
                         methodArrayListLoad.add(method);
                     } else if (method.getAnnotation(EventPluginConfig.class).value().equals(EventType.SAVE)) {
@@ -69,7 +68,12 @@ public class PluginConfig {
         for (Object c : mapSelect.keySet()) {
             List<Method> methods = mapSelect.get(c);
             for(Method method : methods) {
-                method.invoke(c); // TODO: В метод передавать конфиг
+                Class<?>[] params = method.getParameterTypes();
+                if (params.length == 0) { // поддержка пустого параметра для обратной совместимости
+                    method.invoke(c); // вызов метода без параметров
+                } else if (params[0].equals(FileConfiguration.class)) {
+                    method.invoke(c, cfg); // вызов метода с параметром
+                }
             }
         }
         return this;
