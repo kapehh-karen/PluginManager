@@ -58,6 +58,18 @@ public class PluginDatabase {
         return ret;
     }
 
+    public int prepareQueryUpdate(String query, Object... args) throws SQLException {
+        PreparedStatement sql = connection.prepareStatement(query);
+        int index = 1;
+        for (Object o : args) {
+            sql.setObject(index, o);
+            index++;
+        }
+        int ret = sql.executeUpdate();
+        sql.close();
+        return ret;
+    }
+
     // ФУНКЦИЯ ДЛЯ ЗАВЕРШЕНИЯ ЗАПРОСА
 
     public void queryEnd(PluginDatabaseResult dbHelperResult) throws SQLException {
