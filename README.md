@@ -37,7 +37,7 @@ pluginConfig.loadData();
 
 // В слушателе
 @EventPluginConfig(EventType.LOAD)
-public void onLoadConfig() {
+public void onLoadConfig(/* FileConfiguration cfg - можно и так */) {
     // TODO
 }
 
