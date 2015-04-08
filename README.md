@@ -78,3 +78,41 @@ if (economy == null) {
     return;
 }
 </pre>
+
+<b>БД</b>
+<pre>
+PluginDatabaseInfo dbInfo = new PluginDatabaseInfo();
+PluginDatabase dbHelper;
+
+if (dbHelper != null) {
+	try {
+		dbHelper.disconnect();
+	} catch (SQLException e) {
+		e.printStackTrace();
+	}
+	dbHelper = null;
+}
+
+dbInfo.setIp(cfg.getString("connect.ip", ""));
+dbInfo.setDb(cfg.getString("connect.db", ""));
+dbInfo.setLogin(cfg.getString("connect.login", ""));
+dbInfo.setPassword(cfg.getString("connect.password", ""));
+dbInfo.setTable(cfg.getString("connect.table", ""));
+
+// коннектимся
+try {
+	// создаем экземпляр класса для соединения с БД
+	dbHelper = new PluginDatabase(
+		dbInfo.getIp(),
+		dbInfo.getDb(),
+		dbInfo.getLogin(),
+		dbInfo.getPassword()
+	);
+
+	dbHelper.connect();
+	getLogger().info("Success connect to MySQL!");
+} catch (SQLException e) {
+	dbHelper = null;
+	e.printStackTrace();
+}
+</pre>
