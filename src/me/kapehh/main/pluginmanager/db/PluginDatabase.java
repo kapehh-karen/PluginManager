@@ -29,6 +29,26 @@ public class PluginDatabase {
         }
     }
 
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public String getDb() {
+        return db;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
     // ФУНКЦИИ ДЛЯ ВЫПОЛНЕНИЯ ЗАПРОСА
     // while (result.next()) { ... }
 
