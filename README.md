@@ -115,4 +115,11 @@ try {
 	dbHelper = null;
 	e.printStackTrace();
 }
+
+// ПРИМЕР ИСПОЛЬЗОВАНИЯ
+try {
+    dbHelper.prepareQueryUpdate("UPDATE players SET online = 0 WHERE name = ?", item.getPlayerName());
+} catch (SQLException e) {
+    e.printStackTrace();
+}
 </pre>
