@@ -122,4 +122,16 @@ try {
 } catch (SQLException e) {
     e.printStackTrace();
 }
+
+// ЕЩЁ ПРИМЕР
+Connection connection = dbHelper.getConnection();
+PreparedStatement statement = connection.prepareStatement(
+    "INSERT INTO `mail`(`raw`, `info`, `sended_date`, `received_date`, `from`, `to`, `is_received`) VALUES (?, ?, NOW(), '0000-00-00 00:00:00', ?, ?, 0)"
+);
+statement.setBytes(1, bItem);
+statement.setString(2, itemStack.toString());
+statement.setString(3, from.getName());
+statement.setString(4, to.getName());
+statement.executeUpdate();
+statement.close();
 </pre>
