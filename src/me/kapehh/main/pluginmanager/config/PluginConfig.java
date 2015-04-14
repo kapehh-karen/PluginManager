@@ -3,17 +3,29 @@ package me.kapehh.main.pluginmanager.config;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Created by Karen on 30.06.2014.
  */
 public class PluginConfig {
+    private static final WeakHashMap<JavaPlugin, PluginConfig> pluginConfigs = new WeakHashMap<JavaPlugin, PluginConfig>();
+
+    public static boolean loadData(String pluginName) {
+        PluginConfig pluginConfig;
+        for (JavaPlugin javaPlugin : pluginConfigs.keySet()) {
+            if (javaPlugin.getName().equalsIgnoreCase(pluginName)) {
+                pluginConfig = pluginConfigs.get(javaPlugin);
+                pluginConfig.loadData();
+                return true;
+            }
+        }
+        return false;
+    }
 
     // Списки методов, которые надо будет вызывать
     private Map<Object, List<Method>> listOfMethodsLoad = new HashMap<Object, List<Method>>();
@@ -25,7 +37,14 @@ public class PluginConfig {
 
     public PluginConfig(JavaPlugin plugin) {
         this.plugin = plugin;
+        pluginConfigs.put(plugin, this);
     }
+
+    /*@Override
+    protected void finalize() throws Throwable {
+        pluginConfigs.remove(this);
+        super.finalize();
+    }*/
 
     public PluginConfig addEventClasses(Object... classes) {
         ArrayList<Method> methodArrayListLoad;

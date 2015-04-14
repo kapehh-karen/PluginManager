@@ -2,3 +2,7 @@ name: PluginManager
 main: me.kapehh.main.pluginmanager.PluginManager
 author: kapehh
 version: 1.0.0
+commands:
+    pluginmanager:
+        usage: /<command> reload <PluginName>
+        aliases: plugmng
