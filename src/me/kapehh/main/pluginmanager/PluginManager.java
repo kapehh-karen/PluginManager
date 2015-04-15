@@ -19,11 +19,7 @@ public class PluginManager extends JavaPlugin implements CommandExecutor {
     // TODO: в parsers вставить механизм JavaScript для вычисления значений
     // TODO: в parsers вставить механизм выбора рандомного значения с условиями, например выбрать из пяти какой чар апнуть, если максимальный может быть 5
     // TODO: добавить функции randInt и randDouble
-
-    /*public static void main(String[] args) {
-        ItemStack item = PluginParserItem.parseItem("WOOL:3");
-        System.out.println(PluginParserItem.toString(item));
-    }*/
+    // TODO: возможно добавить функцию вычисления расстояния от Location до Location
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {

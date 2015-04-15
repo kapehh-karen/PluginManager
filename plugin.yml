@@ -4,5 +4,5 @@ author: kapehh
 version: 1.0.0
 commands:
     pluginmanager:
-        usage: /<command> reload <PluginName>
+        usage: /<command> reload [PluginName]
         aliases: plugmng
