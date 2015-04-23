@@ -31,9 +31,9 @@ class PluginSyncTimer extends BukkitRunnable {
             for (PluginSyncTask task : syncTasks) {
                 iPluginAsyncTask = task.getiPluginAsyncTask();
                 if (task.isSuccess())
-                    iPluginAsyncTask.onSuccess(task.getObj());
+                    iPluginAsyncTask.onSuccess(task.getId(), task.getObj());
                 else if (task.isFailure())
-                    iPluginAsyncTask.onFailure(task.getThrowable());
+                    iPluginAsyncTask.onFailure(task.getId(), task.getThrowable());
             }
         }
     }

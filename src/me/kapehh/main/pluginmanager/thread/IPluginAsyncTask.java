@@ -5,6 +5,6 @@ package me.kapehh.main.pluginmanager.thread;
  */
 public interface IPluginAsyncTask {
     public Object doRun(int id, Object[] params) throws Throwable;
-    public void onSuccess(Object res);
-    public void onFailure(Throwable err);
+    public void onSuccess(int id, Object res);
+    public void onFailure(int id, Throwable err);
 }
