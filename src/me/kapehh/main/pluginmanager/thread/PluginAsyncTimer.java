@@ -1,5 +1,6 @@
 package me.kapehh.main.pluginmanager.thread;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * Created by Karen on 23.04.2015.
  */
 public class PluginAsyncTimer extends BukkitRunnable {
-    final Object syncObj = new Object();
+    boolean isCancelled;
     JavaPlugin plugin;
     PluginSyncTimer pluginSyncTimer;
     List<PluginAsyncTask> asyncTasks;
@@ -19,10 +20,11 @@ public class PluginAsyncTimer extends BukkitRunnable {
         this.plugin = plugin;
         this.asyncTasks = new ArrayList<PluginAsyncTask>();
         this.pluginSyncTimer = new PluginSyncTimer(plugin);
+        this.isCancelled = false;
     }
 
     public void start(long period) {
-        runTaskTimerAsynchronously(plugin, 0, period); // async
+        runTaskAsynchronously(plugin); // async
         pluginSyncTimer.runTaskTimer(plugin, 0, period); // sync
     }
 
@@ -32,18 +34,20 @@ public class PluginAsyncTimer extends BukkitRunnable {
     }
 
     public void runTask(IPluginAsyncTask iPluginAsyncTask, int id, Object... params) {
-        synchronized (syncObj) {
-            asyncTasks.add(new PluginAsyncTask(id, iPluginAsyncTask, params));
-        }
+        asyncTasks.add(new PluginAsyncTask(id, iPluginAsyncTask, params));
     }
 
     @Override
     public void run() {
-        synchronized (syncObj) {
-            IPluginAsyncTask iPluginAsyncTask;
-            Object ret;
-            boolean isThrows;
-            for (PluginAsyncTask task : asyncTasks) {
+        IPluginAsyncTask iPluginAsyncTask;
+        PluginAsyncTask task;
+        Object ret;
+        boolean isThrows;
+
+        while (!isCancelled) {
+            while (asyncTasks.size() > 0) {
+                task = asyncTasks.get(0);
+
                 ret = null;
                 iPluginAsyncTask = task.getiPluginAsyncTask();
                 try {
@@ -54,7 +58,19 @@ public class PluginAsyncTimer extends BukkitRunnable {
                     isThrows = true;
                 }
                 if (!isThrows) pluginSyncTimer.runTask(iPluginAsyncTask, task.getId(), ret, null);
+
+                asyncTasks.remove(0);
             }
+
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) { }
         }
+    }
+
+    @Override
+    public void cancel() throws IllegalStateException {
+        isCancelled = true;
+        super.cancel();
     }
 }
