@@ -4,12 +4,16 @@ package me.kapehh.main.pluginmanager.thread;
  * Created by Karen on 23.04.2015.
  */
 class PluginSyncTask {
+    public static final int IS_SUCCESS = 1;
+    public static final int IS_FAILURE = 2;
+
+    int type;
     int id;
     IPluginAsyncTask iPluginAsyncTask;
     Object obj;
     Throwable throwable;
 
-    public PluginSyncTask(int id, IPluginAsyncTask iPluginAsyncTask, Object obj, Throwable throwable) {
+    public PluginSyncTask(int type, int id, IPluginAsyncTask iPluginAsyncTask, Object obj, Throwable throwable) {
         this.id = id;
         this.iPluginAsyncTask = iPluginAsyncTask;
         this.obj = obj;
@@ -17,11 +21,11 @@ class PluginSyncTask {
     }
 
     public boolean isSuccess() {
-        return obj != null;
+        return type == IS_SUCCESS;
     }
 
     public boolean isFailure() {
-        return throwable != null;
+        return type == IS_FAILURE;
     }
 
     public int getId() {

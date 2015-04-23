@@ -18,9 +18,9 @@ class PluginSyncTimer extends BukkitRunnable {
         this.syncTasks = new ArrayList<PluginSyncTask>();
     }
 
-    public void runTask(IPluginAsyncTask iPluginAsyncTask, int id, Object obj, Throwable throwable) {
+    public void runTask(int type, IPluginAsyncTask iPluginAsyncTask, int id, Object obj, Throwable throwable) {
         if (obj == null && throwable == null) return;
-        syncTasks.add(new PluginSyncTask(id, iPluginAsyncTask, obj, throwable));
+        syncTasks.add(new PluginSyncTask(type, id, iPluginAsyncTask, obj, throwable));
     }
 
     @Override

@@ -54,10 +54,10 @@ public class PluginAsyncTimer extends BukkitRunnable {
                     ret = iPluginAsyncTask.doRun(task.getId(), task.getParams());
                     isThrows = false;
                 } catch (Throwable throwable) {
-                    pluginSyncTimer.runTask(iPluginAsyncTask, task.getId(), null, throwable);
+                    pluginSyncTimer.runTask(PluginSyncTask.IS_FAILURE, iPluginAsyncTask, task.getId(), null, throwable);
                     isThrows = true;
                 }
-                if (!isThrows) pluginSyncTimer.runTask(iPluginAsyncTask, task.getId(), ret, null);
+                if (!isThrows) pluginSyncTimer.runTask(PluginSyncTask.IS_SUCCESS, iPluginAsyncTask, task.getId(), ret, null);
 
                 asyncTasks.remove(0);
             }
