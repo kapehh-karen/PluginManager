@@ -138,3 +138,41 @@ statement.setString(4, to.getName());
 statement.executeUpdate();
 statement.close();
 </pre>
+
+<b>Выполнение в другом потоке пула задач</b>
+<pre>
+PluginAsyncTimer pluginAsyncTimer = new PluginAsyncTimer(this);
+pluginAsyncTimer.start(ConstantSystem.ticksPerSec);
+// тики используются в синхронном с текущим потоком таймером, который выполняет onSuccess и onFailure
+
+. . .
+
+// ЗАПУСК ЗАДАЧИ В ДРУГОМ ПОТОКЕ
+pluginAsyncTimer.runTask(this, MY_ID_ACTION, ... /* список аргументов через запятую */);
+
+. . .
+
+// РЕАЛИЗАЦИЯ ИНТЕРФЕЙСА
+public class MyAsyncTasks implements IPluginAsyncTask {
+    private static final int MY_ID_ACTION = 1;
+    
+    @Override
+    public Object doRun(int id, Object[] args) throws Throwable {
+        switch (id) {
+            case MY_ID_ACTION:
+            	// TODO
+            	break;
+        }
+        return null;
+    }
+    
+    @Override
+    public void onSuccess(int id, Object res) {
+
+    }
+
+    @Override
+    public void onFailure(int id, Throwable err) {
+        err.printStackTrace();
+    }
+}
