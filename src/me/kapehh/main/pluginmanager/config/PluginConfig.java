@@ -134,6 +134,8 @@ public class PluginConfig {
 
     // TODO: Сделать конструктор типа PluginConfig(String configName) для кода ниже
 
+    // maybe YamlConfiguration implements FileConfiguration
+
     /*private static LinkedHashMap<String, YamlConfiguration> lstCfg = new LinkedHashMap<String, YamlConfiguration>();
 
     public static YamlConfiguration addCustomConfig(String name) {

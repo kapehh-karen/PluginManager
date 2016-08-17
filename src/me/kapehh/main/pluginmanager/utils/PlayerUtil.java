@@ -13,8 +13,7 @@ public class PlayerUtil {
     }
 
     public static Player getOnlinePlayer(String name, boolean ignoreCase) {
-        Player[] players = Bukkit.getOnlinePlayers();
-        for (Player player : players) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             if (ignoreCase) {
                 if (player.getName().equalsIgnoreCase(name)) {
                     return player;

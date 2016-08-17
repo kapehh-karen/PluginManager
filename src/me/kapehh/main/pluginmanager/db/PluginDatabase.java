@@ -6,21 +6,31 @@ import java.sql.*;
  * Created by Karen on 21.01.2015.
  */
 public class PluginDatabase {
-    Connection connection = null;
-    String ip;
-    String db;
-    String login;
-    String password;
+    private Connection connection = null;
+    private String ip;
+    private int port;
+    private String db;
+    private String login;
+    private String password;
 
-    public PluginDatabase(String ip, String db, String login, String password) {
+    public PluginDatabase(PluginDatabaseInfo dbInfo) {
+        this.ip = dbInfo.getIp();
+        this.port = dbInfo.getPort();
+        this.db = dbInfo.getDb();
+        this.login = dbInfo.getLogin();
+        this.password = dbInfo.getPassword();
+    }
+
+    public PluginDatabase(String ip, int port, String db, String login, String password) {
         this.ip = ip;
+        this.port = port;
         this.db = db;
         this.login = login;
         this.password = password;
     }
 
     public void connect() throws SQLException {
-        connection = DriverManager.getConnection("jdbc:mysql://" + ip + "/" + db, login, password);
+        connection = DriverManager.getConnection("jdbc:mysql://" + ip + ":" + port + "/" + db, login, password);
     }
 
     public void disconnect() throws SQLException {

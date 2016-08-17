@@ -4,6 +4,7 @@ import me.kapehh.main.pluginmanager.config.PluginConfig;
 import me.kapehh.main.pluginmanager.logger.PluginLogger;
 import me.kapehh.main.pluginmanager.parsers.PluginParserItem;
 import me.kapehh.main.pluginmanager.parsers.PluginParserLocation;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -24,7 +25,7 @@ public class PluginManager extends JavaPlugin implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (!sender.isOp()) {
-            sender.sendMessage("Forbidden! Only OP players.");
+            sender.sendMessage(ChatColor.DARK_RED + "Forbidden! Only OP players.");
             return true;
         }
 

@@ -4,16 +4,23 @@ package me.kapehh.main.pluginmanager.db;
  * Created by Karen on 21.01.2015.
  */
 public class PluginDatabaseInfo {
-    String ip;
-    String db;
-    String login;
-    String password;
-    String table;
+    private String ip;
+    private int port;
+    private String db;
+    private String login;
+    private String password;
+    private String table;
 
     public PluginDatabaseInfo() { }
 
     public PluginDatabaseInfo(String ip, String db, String login, String password, String table) {
+        // Default MySQL port is 3306
+        this(ip, 3306, db, login, password, table);
+    }
+
+    public PluginDatabaseInfo(String ip, int port, String db, String login, String password, String table) {
         this.ip = ip;
+        this.port = port;
         this.db = db;
         this.login = login;
         this.password = password;
@@ -26,6 +33,14 @@ public class PluginDatabaseInfo {
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 
     public String getDb() {
