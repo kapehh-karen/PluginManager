@@ -1,8 +1,12 @@
 package me.kapehh.main.pluginmanager.config;
 
+import me.kapehh.main.pluginmanager.constants.ConstantSystem;
+import me.kapehh.main.pluginmanager.utils.StreamUtil;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.*;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,6 +19,7 @@ import java.util.logging.Logger;
 public class PluginConfig {
     private static final WeakHashMap<JavaPlugin, PluginConfig> pluginConfigs = new WeakHashMap<JavaPlugin, PluginConfig>();
 
+    // Метод для перезагрузки плагина
     public static boolean loadData(String pluginName) {
         PluginConfig pluginConfig;
         for (JavaPlugin javaPlugin : pluginConfigs.keySet()) {
@@ -30,30 +35,76 @@ public class PluginConfig {
     // Списки методов, которые надо будет вызывать
     private Map<Object, List<Method>> listOfMethodsLoad = new HashMap<Object, List<Method>>();
     private Map<Object, List<Method>> listOfMethodsSave = new HashMap<Object, List<Method>>();
+    private Map<Object, List<Method>> listOfMethodsDefault = new HashMap<Object, List<Method>>();
 
     // Внутренние переменные
     private FileConfiguration cfg;
     private JavaPlugin plugin;
+    private File configFile;
 
-    public PluginConfig(JavaPlugin plugin) {
+    // Списки конфигов
+    private LinkedHashMap<String, YamlConfiguration> lstCfg = new LinkedHashMap<String, YamlConfiguration>();
+
+    public PluginConfig(JavaPlugin plugin, String folder, String name) {
         this.plugin = plugin;
-        pluginConfigs.put(plugin, this);
+        // TODO: Заменить WeakHashMap<JavaPlugin, PluginConfig> на WeakHashMap<JavaPlugin, List<PluginConfig>>
+        //pluginConfigs.put(plugin, this);
+
+        // Создаем папку плагина, если ее нету
+        if (!plugin.getDataFolder().exists()) {
+            plugin.getDataFolder().mkdirs();
+        }
+
+        // Создаем File на наш конфиг будущий
+        // configFile = /PluginName/folder/name.yml
+        configFile = new File(new File(plugin.getDataFolder(), folder), name + ".yml");
     }
 
-    /*@Override
-    protected void finalize() throws Throwable {
-        pluginConfigs.remove(this);
-        super.finalize();
-    }*/
+    public PluginConfig setup() {
+        try {
+            if (!configFile.exists()) {
+                // Если нет конфига
+
+                // Перед созданием файла, необходимо убедиться что все папки созданы для этого
+                if (!configFile.getParentFile().exists()) {
+                    configFile.getParentFile().mkdirs();
+                }
+
+                // Создаем пустой файл
+                configFile.createNewFile();
+
+                // Читаем конфиг
+                cfg = YamlConfiguration.loadConfiguration(configFile);
+
+                // Вызываем все методы DEFAULT чтобы в конфиг прописали значения по умолчанию
+                RaiseEvent(EventType.DEFAULT);
+
+                // Сохраняем в файл значения по умолчанию
+                cfg.save(configFile);
+            } else {
+                // Если конфиг есть
+
+                // Читаем конфиг
+                cfg = YamlConfiguration.loadConfiguration(configFile);
+            }
+
+            // После корректного создания конфига, вызываем событие загрузки значений
+            RaiseEvent(EventType.LOAD);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return this;
+    }
 
     public PluginConfig addEventClasses(Object... classes) {
-        ArrayList<Method> methodArrayListLoad;
-        ArrayList<Method> methodArrayListSave;
+        // TODO: Очищается постоянно, может убрать?
         listOfMethodsLoad.clear();
         listOfMethodsSave.clear();
+        listOfMethodsDefault.clear();
         for (Object c : classes) {
-            methodArrayListLoad = new ArrayList<Method>();
-            methodArrayListSave = new ArrayList<Method>();
+            ArrayList<Method> methodArrayListLoad = new ArrayList<Method>();
+            ArrayList<Method> methodArrayListSave = new ArrayList<Method>();
+            ArrayList<Method> methodArrayListDefault = new ArrayList<Method>();
             Method[] methods = c.getClass().getMethods();
             for(Method method : methods){
                 if(method.isAnnotationPresent(EventPluginConfig.class)) {
@@ -61,6 +112,8 @@ public class PluginConfig {
                         methodArrayListLoad.add(method);
                     } else if (method.getAnnotation(EventPluginConfig.class).value().equals(EventType.SAVE)) {
                         methodArrayListSave.add(method);
+                    } else if (method.getAnnotation(EventPluginConfig.class).value().equals(EventType.DEFAULT)) {
+                        methodArrayListDefault.add(method);
                     }
                 }
             }
@@ -69,6 +122,9 @@ public class PluginConfig {
             }
             if (methodArrayListSave.size() > 0) {
                 listOfMethodsSave.put(c, methodArrayListSave);
+            }
+            if (methodArrayListDefault.size() > 0) {
+                listOfMethodsDefault.put(c, methodArrayListDefault);
             }
         }
         return this;
@@ -80,6 +136,8 @@ public class PluginConfig {
             mapSelect = listOfMethodsLoad;
         } else if (eventPluginConfig.equals(EventType.SAVE)) {
             mapSelect = listOfMethodsSave;
+        } else if (eventPluginConfig.equals(EventType.DEFAULT)) {
+            mapSelect = listOfMethodsDefault;
         }
         if (mapSelect == null) {
             return this;
@@ -102,52 +160,36 @@ public class PluginConfig {
         return cfg;
     }
 
-    public PluginConfig setup() {
-        plugin.saveDefaultConfig();
-        cfg = plugin.getConfig();
-        cfg.options().copyDefaults(true);
-        plugin.saveConfig();
-        return this;
-    }
 
     public PluginConfig loadData() {
-        plugin.reloadConfig();
-        cfg = plugin.getConfig();
+        // Читаем конфиг
+        cfg = YamlConfiguration.loadConfiguration(configFile);
+
         try {
+            // Вызываем событие загрузки значений
             RaiseEvent(EventType.LOAD);
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return this;
     }
 
     public PluginConfig saveData() {
         try {
+            // Вызываем событие сохранения значений
             RaiseEvent(EventType.SAVE);
+
+            // На всякий случай проверяем, есть ли папки
+            if (!configFile.getParentFile().exists()) {
+                configFile.getParentFile().mkdirs();
+            }
+
+            // Сохраняем в файл
+            cfg.save(configFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        plugin.saveConfig();
         return this;
     }
-
-
-    // TODO: Сделать конструктор типа PluginConfig(String configName) для кода ниже
-
-    // maybe YamlConfiguration implements FileConfiguration
-
-    /*private static LinkedHashMap<String, YamlConfiguration> lstCfg = new LinkedHashMap<String, YamlConfiguration>();
-
-    public static YamlConfiguration addCustomConfig(String name) {
-        return lstCfg.put(
-            name,
-            YamlConfiguration.loadConfiguration(
-                new File(CFPlugin.getPlugin().getDataFolder().getPath() + CFConfig.fileSep + name + ".yml")
-            )
-        );
-    }
-
-    public static YamlConfiguration getCustomConfig(String name) {
-        return lstCfg.get(name);
-    }*/
 }

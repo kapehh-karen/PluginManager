@@ -38,9 +38,9 @@ public class PluginManager extends JavaPlugin implements CommandExecutor {
 
         if (method.equals("reload")) {
             if (PluginConfig.loadData(pluginName)) {
-                sender.sendMessage("[PluginManager] Plugin reloaded!");
+                sender.sendMessage(ChatColor.GREEN + "[PluginManager] Plugin reloaded!");
             } else {
-                sender.sendMessage("[PluginManager] Plugin not found!");
+                sender.sendMessage(ChatColor.DARK_RED + "[PluginManager] Plugin not found!");
             }
             return true;
         }

@@ -28,6 +28,7 @@ public class PluginLogger {
         this.log = Logger.getLogger("me.kapehh.main.pluginmanager.logger." + logName);
         this.logFormat = logFormat;
 
+        // Создаем папку плагина, если ее нету
         if (!plugin.getDataFolder().exists()) {
             plugin.getDataFolder().mkdirs();
         }
