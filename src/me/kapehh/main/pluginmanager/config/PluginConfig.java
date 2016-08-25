@@ -2,6 +2,7 @@ package me.kapehh.main.pluginmanager.config;
 
 import me.kapehh.main.pluginmanager.constants.ConstantSystem;
 import me.kapehh.main.pluginmanager.utils.StreamUtil;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -17,20 +18,22 @@ import java.util.logging.Logger;
  * Created by Karen on 30.06.2014.
  */
 public class PluginConfig {
-    private static final WeakHashMap<JavaPlugin, PluginConfig> pluginConfigs = new WeakHashMap<JavaPlugin, PluginConfig>();
+    private static final List<WeakReference<PluginConfig>> pluginConfigs = new ArrayList<>();
 
-    // Метод для перезагрузки плагина
+    // Метод для перезагрузки плагинов
     public static boolean loadData(String pluginName) {
-        PluginConfig pluginConfig;
-        for (JavaPlugin javaPlugin : pluginConfigs.keySet()) {
-            if (javaPlugin.getName().equalsIgnoreCase(pluginName)) {
-                pluginConfig = pluginConfigs.get(javaPlugin);
+        boolean isLoaded = false;
+        for (WeakReference<PluginConfig> weakPluginConfig : pluginConfigs) {
+            PluginConfig pluginConfig = weakPluginConfig.get();
+            if ((pluginConfig != null) && pluginConfig.getPluginName().equalsIgnoreCase(pluginName)) {
                 pluginConfig.loadData();
-                return true;
+                isLoaded = true;
             }
         }
-        return false;
+        return isLoaded;
     }
+
+    // ------ start class -------
 
     // Списки методов, которые надо будет вызывать
     private Map<Object, List<Method>> listOfMethodsLoad = new HashMap<Object, List<Method>>();
@@ -39,16 +42,18 @@ public class PluginConfig {
 
     // Внутренние переменные
     private FileConfiguration cfg;
-    private JavaPlugin plugin;
     private File configFile;
+    private String pluginName;
 
-    // Списки конфигов
-    private LinkedHashMap<String, YamlConfiguration> lstCfg = new LinkedHashMap<String, YamlConfiguration>();
+    public PluginConfig(JavaPlugin plugin, String name) {
+        this(plugin, ".", name);
+    }
 
     public PluginConfig(JavaPlugin plugin, String folder, String name) {
-        this.plugin = plugin;
-        // TODO: Заменить WeakHashMap<JavaPlugin, PluginConfig> на WeakHashMap<JavaPlugin, List<PluginConfig>>
-        //pluginConfigs.put(plugin, this);
+        this.pluginName = plugin.getName();
+
+        // Добавляем в общий список всех PluginConfig'ов
+        pluginConfigs.add(new WeakReference<>(this));
 
         // Создаем папку плагина, если ее нету
         if (!plugin.getDataFolder().exists()) {
@@ -58,6 +63,10 @@ public class PluginConfig {
         // Создаем File на наш конфиг будущий
         // configFile = /PluginName/folder/name.yml
         configFile = new File(new File(plugin.getDataFolder(), folder), name + ".yml");
+    }
+
+    public String getPluginName() {
+        return pluginName;
     }
 
     public PluginConfig setup() {
@@ -191,5 +200,37 @@ public class PluginConfig {
             e.printStackTrace();
         }
         return this;
+    }
+
+    public String getColoredText(String path) {
+        String strTxt = cfg.getString(path);
+
+        // Color Text
+        strTxt = strTxt.replace("&0", ChatColor.BLACK.toString());
+        strTxt = strTxt.replace("&1", ChatColor.DARK_BLUE.toString());
+        strTxt = strTxt.replace("&2", ChatColor.DARK_GREEN.toString());
+        strTxt = strTxt.replace("&3", ChatColor.DARK_AQUA.toString());
+        strTxt = strTxt.replace("&4", ChatColor.DARK_RED.toString());
+        strTxt = strTxt.replace("&5", ChatColor.DARK_PURPLE.toString());
+        strTxt = strTxt.replace("&6", ChatColor.GOLD.toString());
+        strTxt = strTxt.replace("&7", ChatColor.GRAY.toString());
+        strTxt = strTxt.replace("&8", ChatColor.DARK_GRAY.toString());
+        strTxt = strTxt.replace("&9", ChatColor.BLUE.toString());
+        strTxt = strTxt.replace("&a", ChatColor.GREEN.toString());
+        strTxt = strTxt.replace("&b", ChatColor.AQUA.toString());
+        strTxt = strTxt.replace("&c", ChatColor.RED.toString());
+        strTxt = strTxt.replace("&d", ChatColor.LIGHT_PURPLE.toString());
+        strTxt = strTxt.replace("&e", ChatColor.YELLOW.toString());
+        strTxt = strTxt.replace("&f", ChatColor.WHITE.toString());
+
+        // Formatting Text
+        strTxt = strTxt.replace("&k", ChatColor.MAGIC.toString());
+        strTxt = strTxt.replace("&l", ChatColor.BOLD.toString());
+        strTxt = strTxt.replace("&m", ChatColor.STRIKETHROUGH.toString());
+        strTxt = strTxt.replace("&n", ChatColor.UNDERLINE.toString());
+        strTxt = strTxt.replace("&o", ChatColor.ITALIC.toString());
+        strTxt = strTxt.replace("&r", ChatColor.RESET.toString());
+
+        return strTxt;
     }
 }
