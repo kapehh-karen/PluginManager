@@ -33,19 +33,20 @@ out/
 <b>Загрузка из конфига</b>
 <pre>
 // Enable
-PluginConfig pluginConfig = new PluginConfig(this);
-pluginConfig.addEventClasses(new MainConfig(this, pluginConfig));
+PluginConfig pluginConfig = new PluginConfig(this, "config"); // Path: plugins/PluginData/[config].yml
+pluginConfig.addEventClasses(new MainConfig());
 pluginConfig.setup();
-pluginConfig.loadData();
 
 // В слушателе
 @EventPluginConfig(EventType.LOAD)
 public void onLoadConfig(/* FileConfiguration cfg - можно и так */) {
     // TODO
 }
+// В EventType.DEFAULT присваиваются в конфиг дефолтные значения
 
 // Disable
 if (pluginConfig != null) {
+    // Call EventType.SAVE event
     pluginConfig.saveData();
 }
 </pre>
