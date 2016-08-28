@@ -34,15 +34,15 @@ out/
 <pre>
 // Enable
 PluginConfig pluginConfig = new PluginConfig(this, "config"); // Path: plugins/PluginData/[config].yml
-pluginConfig.addEventClasses(new MainConfig());
-pluginConfig.setup();
+pluginConfig.addDefault("message-test-1", "&cTest1") // Defaults values
+            .addDefault("message-test-2", "&cTest2");
+pluginConfig.setEventListeners(this).setup();
 
 // В слушателе
 @EventPluginConfig(EventType.LOAD)
-public void onLoadConfig(/* FileConfiguration cfg - можно и так */) {
+public void onLoadConfig(FileConfiguration cfg) {
     // TODO
 }
-// В EventType.DEFAULT присваиваются в конфиг дефолтные значения
 
 // Disable
 if (pluginConfig != null) {
