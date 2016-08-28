@@ -38,12 +38,12 @@ public class PluginConfig {
     // Списки методов, которые надо будет вызывать
     private Map<Object, List<Method>> listOfMethodsLoad = new HashMap<Object, List<Method>>();
     private Map<Object, List<Method>> listOfMethodsSave = new HashMap<Object, List<Method>>();
-    private Map<Object, List<Method>> listOfMethodsDefault = new HashMap<Object, List<Method>>();
 
     // Внутренние переменные
     private FileConfiguration cfg;
     private File configFile;
     private String pluginName;
+    private Map<String, Object> defaults = new HashMap<>();
 
     public PluginConfig(JavaPlugin plugin, String name) {
         this(plugin, ".", name);
@@ -86,7 +86,10 @@ public class PluginConfig {
                 cfg = YamlConfiguration.loadConfiguration(configFile);
 
                 // Вызываем все методы DEFAULT чтобы в конфиг прописали значения по умолчанию
-                RaiseEvent(EventType.DEFAULT);
+                //RaiseEvent(EventType.DEFAULT);
+
+                // Записываем значения по умолчанию
+                saveDefaults();
 
                 // Сохраняем в файл значения по умолчанию
                 cfg.save(configFile);
@@ -95,6 +98,10 @@ public class PluginConfig {
 
                 // Читаем конфиг
                 cfg = YamlConfiguration.loadConfiguration(configFile);
+
+                // Если в считанном конфиге отсутствуют значения, дописываем их, и сохраняем
+                if (saveDefaults())
+                    cfg.save(configFile);
             }
 
             // После корректного создания конфига, вызываем событие загрузки значений
@@ -105,11 +112,9 @@ public class PluginConfig {
         return this;
     }
 
-    public PluginConfig addEventClasses(Object... classes) {
-        // TODO: Очищается постоянно, может убрать?
+    public PluginConfig setEventListeners(Object... classes) {
         listOfMethodsLoad.clear();
         listOfMethodsSave.clear();
-        listOfMethodsDefault.clear();
         for (Object c : classes) {
             ArrayList<Method> methodArrayListLoad = new ArrayList<Method>();
             ArrayList<Method> methodArrayListSave = new ArrayList<Method>();
@@ -121,8 +126,6 @@ public class PluginConfig {
                         methodArrayListLoad.add(method);
                     } else if (method.getAnnotation(EventPluginConfig.class).value().equals(EventType.SAVE)) {
                         methodArrayListSave.add(method);
-                    } else if (method.getAnnotation(EventPluginConfig.class).value().equals(EventType.DEFAULT)) {
-                        methodArrayListDefault.add(method);
                     }
                 }
             }
@@ -131,9 +134,6 @@ public class PluginConfig {
             }
             if (methodArrayListSave.size() > 0) {
                 listOfMethodsSave.put(c, methodArrayListSave);
-            }
-            if (methodArrayListDefault.size() > 0) {
-                listOfMethodsDefault.put(c, methodArrayListDefault);
             }
         }
         return this;
@@ -145,8 +145,6 @@ public class PluginConfig {
             mapSelect = listOfMethodsLoad;
         } else if (eventPluginConfig.equals(EventType.SAVE)) {
             mapSelect = listOfMethodsSave;
-        } else if (eventPluginConfig.equals(EventType.DEFAULT)) {
-            mapSelect = listOfMethodsDefault;
         }
         if (mapSelect == null) {
             return this;
@@ -155,10 +153,24 @@ public class PluginConfig {
             List<Method> methods = mapSelect.get(c);
             for(Method method : methods) {
                 Class<?>[] params = method.getParameterTypes();
-                if (params.length == 0) { // поддержка пустого параметра для обратной совместимости
-                    method.invoke(c); // вызов метода без параметров
-                } else if (params[0].equals(FileConfiguration.class)) {
-                    method.invoke(c, cfg); // вызов метода с параметром
+                switch (params.length) {
+                    case 0: // Аргументов
+                        method.invoke(c); // вызов метода без параметров
+                        break;
+                    case 1: // 1 аргумент
+                        if (params[0].equals(FileConfiguration.class)) {
+                            method.invoke(c, cfg);
+                        } else if (params[0].equals(FileConfiguration.class)) {
+                            method.invoke(c, this);
+                        }
+                        break;
+                    case 2: // 2 аргумента
+                        if (params[0].equals(PluginConfig.class) && params[1].equals(FileConfiguration.class)) {
+                            method.invoke(c, this, cfg);
+                        } else if (params[0].equals(FileConfiguration.class) && params[1].equals(PluginConfig.class)) {
+                            method.invoke(c, cfg, this);
+                        }
+                        break;
                 }
             }
         }
@@ -169,6 +181,21 @@ public class PluginConfig {
         return cfg;
     }
 
+    public PluginConfig addDefault(String path, Object val) {
+        defaults.put(path, val);
+        return this;
+    }
+
+    // Сохраняет дефолтные значения в конфиг, если не найдены
+    private boolean saveDefaults() {
+        boolean ret = false;
+        for (String path : defaults.keySet())
+            if (!cfg.contains(path)) {
+                ret = true;
+                cfg.set(path, defaults.get(path));
+            }
+        return ret;
+    }
 
     public PluginConfig loadData() {
         // Читаем конфиг

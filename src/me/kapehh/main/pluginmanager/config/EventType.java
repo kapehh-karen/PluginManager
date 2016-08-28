@@ -5,6 +5,5 @@ package me.kapehh.main.pluginmanager.config;
  */
 public enum EventType {
     LOAD,
-    SAVE,
-    DEFAULT
+    SAVE
 }
