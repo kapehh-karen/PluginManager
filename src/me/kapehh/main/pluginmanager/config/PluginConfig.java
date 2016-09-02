@@ -18,14 +18,13 @@ import java.util.logging.Logger;
  * Created by Karen on 30.06.2014.
  */
 public class PluginConfig {
-    private static final List<WeakReference<PluginConfig>> pluginConfigs = new ArrayList<>();
+    private static final List<PluginConfig> pluginConfigs = new ArrayList<>();
 
     // Метод для перезагрузки плагинов
     public static boolean loadData(String pluginName) {
         boolean isLoaded = false;
-        for (WeakReference<PluginConfig> weakPluginConfig : pluginConfigs) {
-            PluginConfig pluginConfig = weakPluginConfig.get();
-            if ((pluginConfig != null) && pluginConfig.getPluginName().equalsIgnoreCase(pluginName)) {
+        for (PluginConfig pluginConfig : pluginConfigs) {
+            if (pluginConfig.getPluginName().equalsIgnoreCase(pluginName)) {
                 pluginConfig.loadData();
                 isLoaded = true;
             }
@@ -53,7 +52,7 @@ public class PluginConfig {
         this.pluginName = plugin.getName();
 
         // Добавляем в общий список всех PluginConfig'ов
-        pluginConfigs.add(new WeakReference<>(this));
+        pluginConfigs.add(this);
 
         // Создаем папку плагина, если ее нету
         if (!plugin.getDataFolder().exists()) {
