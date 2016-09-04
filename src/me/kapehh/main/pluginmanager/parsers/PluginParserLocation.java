@@ -8,6 +8,7 @@ import org.bukkit.World;
  * Created by Karen on 10.08.2014.
  */
 public class PluginParserLocation {
+    // TODO: Засунуть в Util
 
     // world:x,y,z:pitch,yaw
     public static Location parseLocation(String location) {

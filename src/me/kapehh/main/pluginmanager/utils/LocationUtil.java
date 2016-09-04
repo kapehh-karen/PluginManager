@@ -7,7 +7,6 @@ import com.sk89q.worldguard.bukkit.WGBukkit;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Location;
 
 /**
@@ -26,24 +25,10 @@ public class LocationUtil {
     // Required: Towny, WorldEdit, WorldGuard
     public static boolean isLocationPVP(Location location) {
         RegionManager regionManager = WGBukkit.getPlugin().getRegionManager(location.getWorld());
-        StateFlag.State globalPVP = regionManager.getRegion("__global__").getFlag(DefaultFlag.PVP);
-        boolean isGlobalPVP = StateFlag.State.ALLOW.equals(globalPVP);
+        StateFlag.State queryPvP = regionManager.getApplicableRegions(location).queryValue(null, DefaultFlag.PVP);
+        boolean isWorldGuardPVP = StateFlag.State.ALLOW.equals(queryPvP);
 
-        //System.out.println("Global PVP: " + isGlobalPVP);
-
-        boolean isContainsRegions = false;
-        boolean isRegionPVP = true;
-        for (ProtectedRegion protectedRegion : regionManager.getApplicableRegions(location).getRegions()) {
-            StateFlag.State pvp = protectedRegion.getFlag(DefaultFlag.PVP);
-            isRegionPVP &= StateFlag.State.ALLOW.equals(pvp);
-            isContainsRegions = true;
-        }
-
-        //System.out.println("Regions PVP: " + isRegionPVP);
-
-        boolean isWorldGuardPVP = isContainsRegions ? isRegionPVP : isGlobalPVP;
-
-        //System.out.println("IS WG PVP: " + isWorldGuardPVP);
+        //System.out.println("-> isWorldGuardPVP: " + isWorldGuardPVP);
 
         WorldCoord worldCoord = new WorldCoord(location.getWorld().getName(), Coord.parseCoord(location));
         boolean isTownyWorldPVP = false;
@@ -68,9 +53,9 @@ public class LocationUtil {
 
         boolean isTownyPVP = (isTownyPlot && isTownyPlotPVP) || (!isTownyPlot && isTownyWorldPVP);
 
-        //System.out.println("IS TOWNY PVP: " + isTownyPVP);
+        //System.out.println("-> isTownyPVP: " + isTownyPVP);
 
-        // Если и то и это разрешают, то почему бы и нет
+        // Если и то и это разрешают, то PVP разрешено
         return isTownyPVP && isWorldGuardPVP;
     }
 

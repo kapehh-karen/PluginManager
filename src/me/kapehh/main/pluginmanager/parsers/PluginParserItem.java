@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
  * Created by Karen on 10.08.2014.
  */
 public class PluginParserItem {
+    // TODO: Засунуть в Util
 
     public static ItemStack parseItem(String item) {
         String type;
@@ -30,6 +31,9 @@ public class PluginParserItem {
     }
 
     public static String toString(ItemStack item) {
-        return String.format("%s:%s", item.getType(), item.getDurability());
+        if (item.getDurability() != 0)
+            return String.format("%s:%s", item.getType(), item.getDurability());
+        else
+            return String.valueOf(item.getType());
     }
 }
