@@ -1,12 +1,8 @@
 package me.kapehh.main.pluginmanager.utils;
 
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-import com.palmergames.bukkit.towny.object.Coord;
-import com.palmergames.bukkit.towny.object.WorldCoord;
-import com.sk89q.worldguard.bukkit.WGBukkit;
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
-import com.sk89q.worldguard.protection.flags.StateFlag;
-import com.sk89q.worldguard.protection.managers.RegionManager;
+import me.kapehh.main.pluginmanager.otherplugins.PluginsAPI;
+import me.kapehh.main.pluginmanager.otherplugins.TownyAPIUtil;
+import me.kapehh.main.pluginmanager.otherplugins.WorldGuardAPIUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -26,31 +22,16 @@ public class LocationUtil {
 
     // Required: Towny, WorldEdit, WorldGuard
     public static boolean isLocationPVP(Location location) {
-        // Start check WorldGuard
-        RegionManager regionManager = WGBukkit.getPlugin().getRegionManager(location.getWorld());
-        StateFlag.State queryPvP = regionManager.getApplicableRegions(location).queryValue(null, DefaultFlag.PVP);
-        boolean isWorldGuardPVP = StateFlag.State.ALLOW.equals(queryPvP);
+        boolean res = true;
 
-        // Start check Towny
-        WorldCoord worldCoord = new WorldCoord(location.getWorld().getName(), Coord.parseCoord(location));
-        boolean isTownyWorldPVP = false;
-        try {
-            isTownyWorldPVP = worldCoord.getTownyWorld().isPVP() || worldCoord.getTownyWorld().isForcePVP();
-        } catch (NotRegisteredException e) {
+        if (PluginsAPI.TOWNY)
+            res &= TownyAPIUtil.isTownPVP(location);
 
-        }
-        boolean isTownyPlot = false;
-        boolean isTownyPlotPVP = false;
-        try {
-            isTownyPlot = (worldCoord.getTownBlock().getTown() != null);
-            isTownyPlotPVP = worldCoord.getTownBlock().getPermissions().pvp;
-        } catch (NotRegisteredException e) {
-
-        }
-        boolean isTownyPVP = (isTownyPlot && isTownyPlotPVP) || (!isTownyPlot && isTownyWorldPVP);
+        if (PluginsAPI.WORLD_GUARD)
+            res &= WorldGuardAPIUtil.isRegionPVP(location);
 
         // Result
-        return isTownyPVP && isWorldGuardPVP;
+        return res;
     }
 
     // world:x,y,z:pitch,yaw

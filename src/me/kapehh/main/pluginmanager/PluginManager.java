@@ -2,8 +2,7 @@ package me.kapehh.main.pluginmanager;
 
 import me.kapehh.main.pluginmanager.config.PluginConfig;
 import me.kapehh.main.pluginmanager.logger.PluginLogger;
-import me.kapehh.main.pluginmanager.parsers.PluginParserItem;
-import me.kapehh.main.pluginmanager.parsers.PluginParserLocation;
+import me.kapehh.main.pluginmanager.otherplugins.PluginsAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -49,6 +48,12 @@ public class PluginManager extends JavaPlugin implements CommandExecutor {
 
     @Override
     public void onEnable() {
+        // Чтобы использовать функционал других плагинов, надо проверить, загружены ли они на сервере
+        PluginsAPI.TOWNY = (getServer().getPluginManager().getPlugin("Towny") != null);
+        PluginsAPI.WORLD_GUARD = (getServer().getPluginManager().getPlugin("WorldGuard") != null);
+
         getCommand("pluginmanager").setExecutor(this);
     }
+
+
 }
